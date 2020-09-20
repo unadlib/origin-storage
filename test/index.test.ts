@@ -1,6 +1,6 @@
-import { OriginClient, OriginStorage } from "../src";
+import { OriginStorageClient, OriginStorage } from '../src';
 
-test("", () => {
-  const originStorage = new OriginStorage();
-  const originClient = new OriginClient();
+test('', () => {
+  // const originStorage = new OriginStorage({});
+  // const originClient = new OriginStorageClient({});
 });

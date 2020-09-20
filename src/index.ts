@@ -1,2 +1,2 @@
-export * from './originClient';
+export * from './originStorageClient';
 export * from './originStorage';
