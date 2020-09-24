@@ -15,6 +15,8 @@ export class OriginStorageClient
 
   constructor({ storageOptions, uri, ...options }: OriginStorageClientOptions) {
     const iframe = document.createElement('iframe');
+    // TODO: fix type
+    (iframe as any).style = 'display:none';
     iframe.src = uri;
     document.body.appendChild(iframe);
     super({
