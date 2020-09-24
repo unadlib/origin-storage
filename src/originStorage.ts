@@ -14,17 +14,20 @@ export class OriginStorage
   protected _read: boolean;
   protected _write: boolean;
 
-  constructor({ read = true, write = true, ...options }: OriginStorageOptions) {
+  constructor({ read = true, write = true, ...options }: OriginStorageOptions = {}) {
     super(options);
     this._read = read;
     this._write = write;
+    this.connect();
   }
 
   async connect() {
     if (!this._read && !this._write) {
       throw new Error(NoAccessError);
     }
+    console.log('======connect');
     const config = await this.emit('connect', undefined);
+    console.log('======config', config);
     this._localforage = localforage.createInstance(config);
   }
 

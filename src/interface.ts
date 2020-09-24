@@ -8,6 +8,7 @@ import localforage from 'localforage';
 export type LocalForageOptions = Parameters<typeof localforage.createInstance>[0];
 
 export interface OriginStorageClientOptions extends IFrameMainTransportOptions {
+  uri: string;
   storageOptions?: LocalForageOptions;
 }
 

@@ -10,11 +10,18 @@ export class OriginStorageClient
   extends IFrameTransport.Main<ClientToStorage>
   implements Receiver<StorageToClient> {
   protected _connect?: () => void;
-  protected _isConnect = false;
+  protected _isConnect: boolean;
   protected _storageOptions?: LocalForageOptions;
 
-  constructor({ storageOptions, ...options }: OriginStorageClientOptions) {
-    super(options);
+  constructor({ storageOptions, uri, ...options }: OriginStorageClientOptions) {
+    const iframe = document.createElement('iframe');
+    iframe.src = uri;
+    document.body.appendChild(iframe);
+    super({
+      iframe,
+      ...options,
+    });
+    this._isConnect = false;
     this._storageOptions = storageOptions;
   }
 

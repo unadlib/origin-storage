@@ -1,48 +1,52 @@
-import resolve from "@rollup/plugin-node-resolve";
-import commonjs from "@rollup/plugin-commonjs";
-import replace from "@rollup/plugin-replace";
-import { terser } from "rollup-plugin-terser";
-import pkg from "./package.json";
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import replace from '@rollup/plugin-replace';
+import { terser } from 'rollup-plugin-terser';
+import pkg from './package.json';
 
-const isProduction = process.env.NODE_ENV === "production";
-const input = "./dist/index.js";
+const isProduction = process.env.NODE_ENV === 'production';
+const input = './dist/index.js';
 
 export default isProduction
   ? {
       input,
       output: [
         {
-          format: "cjs",
-          exports: "auto",
-          file: "dist/index.cjs.js",
+          format: 'cjs',
+          exports: 'auto',
+          file: 'dist/index.cjs.js',
           sourcemap: true,
         },
         {
-          format: "umd",
+          format: 'umd',
           name: pkg.name
-            .split("-")
-            .map(([s, ...rest]) => [s.toUpperCase(), ...rest].join(""))
-            .join(""),
+            .split('-')
+            .map(([s, ...rest]) => [s.toUpperCase(), ...rest].join(''))
+            .join(''),
           file: pkg.unpkg,
           sourcemap: true,
+          globals: {
+            'data-transport': 'DataTransport',
+          },
         },
       ],
       plugins: [
         resolve(),
         commonjs(),
         replace({
-          __DEV__: "false",
+          __DEV__: 'false',
         }),
         terser(),
       ],
+      external: ['data-transport'],
     }
   : {
       input,
       output: [
         {
-          format: "cjs",
-          exports: "auto",
-          file: "dist/index.cjs.development.js",
+          format: 'cjs',
+          exports: 'auto',
+          file: 'dist/index.cjs.development.js',
           sourcemap: true,
         },
       ],
@@ -50,7 +54,8 @@ export default isProduction
         resolve(),
         commonjs(),
         replace({
-          __DEV__: "true",
+          __DEV__: 'true',
         }),
       ],
+      external: ['data-transport'],
     };
