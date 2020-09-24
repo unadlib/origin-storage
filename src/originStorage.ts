@@ -1,5 +1,6 @@
 import { IFrameTransport, Receiver, listen, Listen } from 'data-transport';
 import localforage from 'localforage';
+import { NoAccessError } from './constant';
 import {
   ClientToStorage,
   OriginStorageOptions,
@@ -21,7 +22,7 @@ export class OriginStorage
 
   async connect() {
     if (!this._read && !this._write) {
-      throw new Error('The OriginStorage does not have any read/write access.');
+      throw new Error(NoAccessError);
     }
     const config = await this.emit('connect', undefined);
     this._localforage = localforage.createInstance(config);

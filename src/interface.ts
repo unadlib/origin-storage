@@ -4,12 +4,11 @@ import {
   TransportData,
 } from 'data-transport';
 import localforage from 'localforage';
-// import { databases } from './constant';
 
-type LocalForageOptions = Parameters<typeof localforage.createInstance>[0];
+export type LocalForageOptions = Parameters<typeof localforage.createInstance>[0];
 
 export interface OriginStorageClientOptions extends IFrameMainTransportOptions {
-  // type?: keyof typeof databases;
+  storageOptions?: LocalForageOptions;
 }
 
 export interface OriginStorageOptions extends IFrameTransportInternalOptions {
