@@ -13,14 +13,14 @@ yarn add origin-storage
 
 ## Usage
 
-1. `storage.html`:
+* `storage.html`:
 
 ```html
 <script src="storage.js"></script>
 ```
 
 
-2. `storage.js`:
+* `storage.js`:
 
 ```ts
 import { OriginStorage } from 'origin-storage';
@@ -28,7 +28,7 @@ import { OriginStorage } from 'origin-storage';
 const originStorage = new OriginStorage();
 ```
 
-3. Cross domain page:
+* Cross domain page:
 
 ```ts
 import { OriginStorageClient } from 'origin-storage';
