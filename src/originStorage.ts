@@ -25,9 +25,7 @@ export class OriginStorage
     if (!this._read && !this._write) {
       throw new Error(NoAccessError);
     }
-    console.log('======connect');
     const config = await this.emit('connect', undefined);
-    console.log('======config', config);
     this._localforage = localforage.createInstance(config);
   }
 
