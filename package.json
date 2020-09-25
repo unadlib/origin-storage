@@ -1,6 +1,6 @@
 {
   "name": "origin-storage",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "A same-origin storage container for cross-domain access",
   "main": "lib/index.js",
   "unpkg": "dist/index.umd.js",

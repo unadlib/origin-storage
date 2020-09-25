@@ -14,7 +14,11 @@ export class OriginStorage
   protected _read: boolean;
   protected _write: boolean;
 
-  constructor({ read = true, write = true, ...options }: OriginStorageOptions = {}) {
+  constructor({
+    read = true,
+    write = true,
+    ...options
+  }: OriginStorageOptions = {}) {
     super(options);
     this._read = read;
     this._write = write;
@@ -32,15 +36,33 @@ export class OriginStorage
   @listen
   async getItem({ request, respond }: Listen<ClientToStorage['getItem']>) {
     if (!this._read) return;
-    const value = await this._localforage.getItem(request.key);
-    respond({ value });
+    try {
+      const value = await this._localforage.getItem(request.key);
+      respond({ value });
+    } catch (e: any) {
+      if (typeof e?.toString === 'function') {
+        respond({ error: e.toString() });
+      }
+      if (__DEV__) {
+        throw e;
+      }
+    }
   }
 
   @listen
   async setItem({ request, respond }: Listen<ClientToStorage['setItem']>) {
     if (!this._write) return;
-    await this._localforage.setItem(request.key, request.value);
-    respond();
+    try {
+      await this._localforage.setItem(request.key, request.value);
+      respond();
+    } catch (e: any) {
+      if (typeof e?.toString === 'function') {
+        respond({ error: e.toString() });
+      }
+      if (__DEV__) {
+        throw e;
+      }
+    }
   }
 
   @listen
@@ -49,35 +71,80 @@ export class OriginStorage
     respond,
   }: Listen<ClientToStorage['removeItem']>) {
     if (!this._write) return;
-    await this._localforage.removeItem(request.key);
-    respond();
+    try {
+      await this._localforage.removeItem(request.key);
+      respond();
+    } catch (e: any) {
+      if (typeof e?.toString === 'function') {
+        respond({ error: e.toString() });
+      }
+      if (__DEV__) {
+        throw e;
+      }
+    }
   }
 
   @listen
   async clear({ respond }: Listen<ClientToStorage['clear']>) {
     if (!this._write) return;
-    await this._localforage.clear();
-    respond();
+    try {
+      await this._localforage.clear();
+      respond();
+    } catch (e: any) {
+      if (typeof e?.toString === 'function') {
+        respond({ error: e.toString() });
+      }
+      if (__DEV__) {
+        throw e;
+      }
+    }
   }
 
   @listen
   async length({ respond }: Listen<ClientToStorage['length']>) {
     if (!this._read) return;
-    const length = await this._localforage.length();
-    respond({ length });
+    try {
+      const length = await this._localforage.length();
+      respond({ length });
+    } catch (e: any) {
+      if (typeof e?.toString === 'function') {
+        respond({ error: e.toString() });
+      }
+      if (__DEV__) {
+        throw e;
+      }
+    }
   }
 
   @listen
   async key({ request, respond }: Listen<ClientToStorage['key']>) {
     if (!this._read) return;
-    const key = await this._localforage.key(request.index);
-    respond({ key });
+    try {
+      const key = await this._localforage.key(request.index);
+      respond({ key });
+    } catch (e: any) {
+      if (typeof e?.toString === 'function') {
+        respond({ error: e.toString() });
+      }
+      if (__DEV__) {
+        throw e;
+      }
+    }
   }
 
   @listen
   async keys({ respond }: Listen<ClientToStorage['keys']>) {
     if (!this._read) return;
-    const keys = await this._localforage.keys();
-    respond({ keys });
+    try {
+      const keys = await this._localforage.keys();
+      respond({ keys });
+    } catch (e: any) {
+      if (typeof e?.toString === 'function') {
+        respond({ error: e.toString() });
+      }
+      if (__DEV__) {
+        throw e;
+      }
+    }
   }
 }

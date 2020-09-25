@@ -3,6 +3,7 @@ import { NoConnectError } from './constant';
 import {
   ClientToStorage,
   OriginStorageClientOptions,
+  StorageError,
   StorageToClient,
 } from './interface';
 
@@ -15,8 +16,7 @@ export class OriginStorageClient
 
   constructor({ storageOptions, uri, ...options }: OriginStorageClientOptions) {
     const iframe = document.createElement('iframe');
-    // TODO: fix type
-    (iframe as any).style = 'display:none';
+    iframe.setAttribute('style', 'display:none');
     iframe.src = uri;
     document.body.appendChild(iframe);
     super({
@@ -34,6 +34,11 @@ export class OriginStorageClient
   @listen
   connect({ respond }: Listen<StorageToClient['connect']>) {
     respond(this._storageOptions!);
+    if (typeof this._connect !== 'function') {
+      if (__DEV__) {
+        throw new Error(`'onConnect' has not been called.`);
+      }
+    }
     this._connect?.();
     this._isConnect = true;
   }
@@ -42,49 +47,76 @@ export class OriginStorageClient
     if (!this._isConnect) {
       throw new Error(NoConnectError);
     }
-    const { value } = await this.emit('getItem', { key });
-    return value;
+    const result = await this.emit('getItem', { key });
+    if ((result as StorageError).error) {
+      throw new Error(`'getItem' error: ${(result as StorageError).error}`);
+    }
+    return (result as { value: unknown }).value;
   }
 
   async setItem<T>(key: string, value: unknown) {
     if (!this._isConnect) {
       throw new Error(NoConnectError);
     }
-    return await this.emit('setItem', { key, value });
+    const result = await this.emit('setItem', { key, value });
+    if ((result as StorageError).error) {
+      throw new Error(`'setItem' error: ${(result as StorageError).error}`);
+    }
+    return result as Exclude<typeof result, StorageError>;
   }
 
   async removeItem(key: string) {
     if (!this._isConnect) {
       throw new Error(NoConnectError);
     }
-    return await this.emit('removeItem', { key });
+    const result = await this.emit('removeItem', { key });
+    if ((result as StorageError).error) {
+      throw new Error(`'removeItem' error: ${(result as StorageError).error}`);
+    }
+    return result as Exclude<typeof result, StorageError>;
   }
 
   async clear() {
     if (!this._isConnect) {
       throw new Error(NoConnectError);
     }
-    return await this.emit('clear', undefined);
+    const result = await this.emit('clear', undefined);
+    if ((result as StorageError).error) {
+      throw new Error(`'clear' error: ${(result as StorageError).error}`);
+    }
+    return result as Exclude<typeof result, StorageError>;
   }
 
   async length() {
     if (!this._isConnect) {
       throw new Error(NoConnectError);
     }
-    return await this.emit('clear', undefined);
+    const result = await this.emit('length', undefined);
+    if ((result as StorageError).error) {
+      throw new Error(`'length' error: ${(result as StorageError).error}`);
+    }
+    return (result as Exclude<typeof result, StorageError>).length;
   }
 
   async key(index: number) {
     if (!this._isConnect) {
       throw new Error(NoConnectError);
     }
-    return await this.emit('key', { index });
+    const result = await this.emit('key', { index });
+    if ((result as StorageError).error) {
+      throw new Error(`'key' error: ${(result as StorageError).error}`);
+    }
+    return (result as Exclude<typeof result, StorageError>).key;
   }
 
   async keys() {
     if (!this._isConnect) {
       throw new Error(NoConnectError);
     }
-    return await this.emit('keys', undefined);
+    const result = await this.emit('keys', undefined);
+    if ((result as StorageError).error) {
+      throw new Error(`'keys' error: ${(result as StorageError).error}`);
+    }
+    return (result as Exclude<typeof result, StorageError>).keys;
   }
 }
