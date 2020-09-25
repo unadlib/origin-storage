@@ -5,6 +5,12 @@
 
 A same-origin storage container for cross-domain access, it is based on localForage and supports IndexedDB, WebSQL and localStorage.
 
+## Motivation
+
+When different Website domains need a same-origin storage container, we have to use iframe's same-origin policy Web local storage solution. `localForage` is an excellent storage library, it supports IndexedDB, WebSQL and localStorage, but it can't solve this problem directly.
+
+That's why we have this library for same-origin storage based on `localForage`.
+
 ## Installation
 
 ```sh
@@ -12,6 +18,8 @@ yarn add origin-storage
 ```
 
 ## Usage
+
+> origin-storage
 
 - `storage.html`:
 
