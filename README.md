@@ -5,7 +5,7 @@
 
 A same-origin storage container for cross-domain access, it is based on localForage and supports IndexedDB, WebSQL and localStorage.
 
-> `origin-storage` uses localStorage in browsers with no IndexedDB or WebSQL support. And `origin-storage` doesn't support Safari.
+> `origin-storage` uses localStorage in browsers with no IndexedDB or WebSQL support. And Safari is not supported.
 
 ## Motivation
 
