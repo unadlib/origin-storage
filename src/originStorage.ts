@@ -1,6 +1,10 @@
 import { IFrameTransport, Receiver, listen, Listen } from 'data-transport';
 import localforage from 'localforage';
-import { NoAccessError } from './constant';
+import {
+  NoAccessError,
+  NoReadAccessError,
+  NoWriteAccessError,
+} from './constant';
 import {
   ClientToStorage,
   OriginStorageOptions,
@@ -35,7 +39,12 @@ export class OriginStorage
 
   @listen
   async getItem({ request, respond }: Listen<ClientToStorage['getItem']>) {
-    if (!this._read) return;
+    if (!this._read) {
+      if (__DEV__) {
+        console.error(NoReadAccessError);
+      }
+      return;
+    }
     try {
       const value = await this._localforage.getItem(request.key);
       respond({ value });
@@ -51,7 +60,12 @@ export class OriginStorage
 
   @listen
   async setItem({ request, respond }: Listen<ClientToStorage['setItem']>) {
-    if (!this._write) return;
+    if (!this._write) {
+      if (__DEV__) {
+        console.error(NoWriteAccessError);
+      }
+      return;
+    }
     try {
       await this._localforage.setItem(request.key, request.value);
       respond();
@@ -70,7 +84,12 @@ export class OriginStorage
     request,
     respond,
   }: Listen<ClientToStorage['removeItem']>) {
-    if (!this._write) return;
+    if (!this._write) {
+      if (__DEV__) {
+        console.error(NoWriteAccessError);
+      }
+      return;
+    }
     try {
       await this._localforage.removeItem(request.key);
       respond();
@@ -86,7 +105,12 @@ export class OriginStorage
 
   @listen
   async clear({ respond }: Listen<ClientToStorage['clear']>) {
-    if (!this._write) return;
+    if (!this._write) {
+      if (__DEV__) {
+        console.error(NoWriteAccessError);
+      }
+      return;
+    }
     try {
       await this._localforage.clear();
       respond();
@@ -102,7 +126,12 @@ export class OriginStorage
 
   @listen
   async length({ respond }: Listen<ClientToStorage['length']>) {
-    if (!this._read) return;
+    if (!this._read) {
+      if (__DEV__) {
+        console.error(NoReadAccessError);
+      }
+      return;
+    }
     try {
       const length = await this._localforage.length();
       respond({ length });
@@ -118,7 +147,12 @@ export class OriginStorage
 
   @listen
   async key({ request, respond }: Listen<ClientToStorage['key']>) {
-    if (!this._read) return;
+    if (!this._read) {
+      if (__DEV__) {
+        console.error(NoReadAccessError);
+      }
+      return;
+    }
     try {
       const key = await this._localforage.key(request.index);
       respond({ key });
@@ -134,7 +168,12 @@ export class OriginStorage
 
   @listen
   async keys({ respond }: Listen<ClientToStorage['keys']>) {
-    if (!this._read) return;
+    if (!this._read) {
+      if (__DEV__) {
+        console.error(NoReadAccessError);
+      }
+      return;
+    }
     try {
       const keys = await this._localforage.keys();
       respond({ keys });
