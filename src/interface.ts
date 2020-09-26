@@ -48,8 +48,8 @@ export interface StorageError {
 }
 
 export type ClientToStorage = {
-  getItem: TransportData<{ key: string }, { value: unknown } | StorageError>;
-  setItem: TransportData<{ key: string; value: unknown }, StorageError | void>;
+  getItem: TransportData<{ key: string }, { value: string } | StorageError>;
+  setItem: TransportData<{ key: string; value: string }, StorageError | void>;
   removeItem: TransportData<{ key: string }, StorageError | void>;
   clear: TransportData<void, StorageError | void>;
   length: TransportData<void, { length: number } | StorageError>;

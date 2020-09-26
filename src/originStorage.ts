@@ -46,7 +46,7 @@ export class OriginStorage
       return;
     }
     try {
-      const value = await this._localforage.getItem(request.key);
+      const value = await this._localforage.getItem(request.key) as string;
       respond({ value });
     } catch (e: any) {
       if (typeof e?.toString === 'function') {

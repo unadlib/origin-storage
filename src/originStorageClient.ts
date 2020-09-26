@@ -48,18 +48,32 @@ export class OriginStorageClient
       throw new Error(NoConnectError);
     }
     const result = await this.emit('getItem', { key });
-    if ((result as StorageError).error) {
+    if ((result as StorageError)?.error) {
       throw new Error(`'getItem' error: ${(result as StorageError).error}`);
     }
-    return (result as { value: unknown }).value;
+    let parsedValue: unknown;
+    try {
+      parsedValue = JSON.parse((result as { value: string }).value);
+    } catch (e) {
+      console.error(`'getItem' JSON.parse Error`);
+      throw e;
+    }
+    return parsedValue;
   }
 
   async setItem<T>(key: string, value: unknown) {
     if (!this._isConnect) {
       throw new Error(NoConnectError);
     }
-    const result = await this.emit('setItem', { key, value });
-    if ((result as StorageError).error) {
+    let stringifiedValue: string;
+    try {
+      stringifiedValue = JSON.stringify(value);
+    } catch (e) {
+      console.error(`'setItem' JSON.stringify Error`);
+      throw e;
+    }
+    const result = await this.emit('setItem', { key, value: stringifiedValue });
+    if ((result as StorageError)?.error) {
       throw new Error(`'setItem' error: ${(result as StorageError).error}`);
     }
     return result as Exclude<typeof result, StorageError>;
@@ -70,7 +84,7 @@ export class OriginStorageClient
       throw new Error(NoConnectError);
     }
     const result = await this.emit('removeItem', { key });
-    if ((result as StorageError).error) {
+    if ((result as StorageError)?.error) {
       throw new Error(`'removeItem' error: ${(result as StorageError).error}`);
     }
     return result as Exclude<typeof result, StorageError>;
@@ -81,7 +95,7 @@ export class OriginStorageClient
       throw new Error(NoConnectError);
     }
     const result = await this.emit('clear', undefined);
-    if ((result as StorageError).error) {
+    if ((result as StorageError)?.error) {
       throw new Error(`'clear' error: ${(result as StorageError).error}`);
     }
     return result as Exclude<typeof result, StorageError>;
@@ -92,7 +106,7 @@ export class OriginStorageClient
       throw new Error(NoConnectError);
     }
     const result = await this.emit('length', undefined);
-    if ((result as StorageError).error) {
+    if ((result as StorageError)?.error) {
       throw new Error(`'length' error: ${(result as StorageError).error}`);
     }
     return (result as Exclude<typeof result, StorageError>).length;
@@ -103,7 +117,7 @@ export class OriginStorageClient
       throw new Error(NoConnectError);
     }
     const result = await this.emit('key', { index });
-    if ((result as StorageError).error) {
+    if ((result as StorageError)?.error) {
       throw new Error(`'key' error: ${(result as StorageError).error}`);
     }
     return (result as Exclude<typeof result, StorageError>).key;
@@ -114,7 +128,7 @@ export class OriginStorageClient
       throw new Error(NoConnectError);
     }
     const result = await this.emit('keys', undefined);
-    if ((result as StorageError).error) {
+    if ((result as StorageError)?.error) {
       throw new Error(`'keys' error: ${(result as StorageError).error}`);
     }
     return (result as Exclude<typeof result, StorageError>).keys;
