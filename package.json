@@ -23,6 +23,13 @@
     "url": "https://github.com/unadlib/origin-storage/issues"
   },
   "homepage": "https://github.com/unadlib/origin-storage#readme",
+  "keywords": [
+    "cross-database",
+    "indexeddb",
+    "websql",
+    "localstorage",
+    "localforage"
+  ],
   "devDependencies": {
     "@rollup/plugin-commonjs": "^15.0.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
