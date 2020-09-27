@@ -27,6 +27,7 @@ export default isProduction
           sourcemap: true,
           globals: {
             'data-transport': 'DataTransport',
+            'broadcast-channel': 'BroadcastChannel',
           },
         },
       ],
@@ -38,7 +39,7 @@ export default isProduction
         }),
         terser(),
       ],
-      external: ['data-transport'],
+      external: ['data-transport', 'broadcast-channel'],
     }
   : {
       input,
@@ -57,5 +58,5 @@ export default isProduction
           __DEV__: 'true',
         }),
       ],
-      external: ['data-transport'],
+      external: ['data-transport', 'broadcast-channel'],
     };

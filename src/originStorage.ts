@@ -1,4 +1,5 @@
 import { IFrameTransport, Receiver, listen, Listen } from 'data-transport';
+import { BroadcastChannel } from 'broadcast-channel';
 import localforage from 'localforage';
 import {
   NoAccessError,
@@ -7,6 +8,7 @@ import {
 } from './constant';
 import {
   ClientToStorage,
+  IChangeData,
   OriginStorageOptions,
   StorageToClient,
 } from './interface';
@@ -17,15 +19,25 @@ export class OriginStorage
   protected _localforage!: ReturnType<typeof localforage.createInstance>;
   protected _read: boolean;
   protected _write: boolean;
+  protected _broadcastChanges: boolean;
+  protected _broadcastChannel?: BroadcastChannel;
 
   constructor({
     read = true,
     write = true,
+    broadcastChanges = false,
     ...options
   }: OriginStorageOptions = {}) {
     super(options);
     this._read = read;
     this._write = write;
+    this._broadcastChanges = broadcastChanges;
+    if (this._broadcastChanges) {
+      this._broadcastChannel = new BroadcastChannel('broadcastChannel_test');
+      this._broadcastChannel.onmessage = (message) => {
+        this.emit('change', message, { respond: false });
+      };
+    }
     this.connect();
   }
 
@@ -38,6 +50,11 @@ export class OriginStorage
   }
 
   @listen
+  broadcastChanges({ respond }: Listen<ClientToStorage['broadcastChanges']>) {
+    respond({ broadcastChanges: this._broadcastChanges });
+  }
+
+  @listen
   async getItem({ request, respond }: Listen<ClientToStorage['getItem']>) {
     if (!this._read) {
       if (__DEV__) {
@@ -46,7 +63,7 @@ export class OriginStorage
       return;
     }
     try {
-      const value = await this._localforage.getItem(request.key) as string;
+      const value = (await this._localforage.getItem(request.key)) as string;
       respond({ value });
     } catch (e: any) {
       if (typeof e?.toString === 'function') {
@@ -69,6 +86,9 @@ export class OriginStorage
     try {
       await this._localforage.setItem(request.key, request.value);
       respond();
+      this._broadcastChannel?.postMessage({
+        key: request.key,
+      } as IChangeData);
     } catch (e: any) {
       if (typeof e?.toString === 'function') {
         respond({ error: e.toString() });
@@ -93,6 +113,9 @@ export class OriginStorage
     try {
       await this._localforage.removeItem(request.key);
       respond();
+      this._broadcastChannel?.postMessage({
+        key: request.key,
+      } as IChangeData);
     } catch (e: any) {
       if (typeof e?.toString === 'function') {
         respond({ error: e.toString() });
@@ -114,6 +137,9 @@ export class OriginStorage
     try {
       await this._localforage.clear();
       respond();
+      this._broadcastChannel?.postMessage({
+        key: null,
+      } as IChangeData);
     } catch (e: any) {
       if (typeof e?.toString === 'function') {
         respond({ error: e.toString() });

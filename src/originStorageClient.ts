@@ -2,6 +2,7 @@ import { IFrameTransport, Listen, listen, Receiver } from 'data-transport';
 import { NoConnectError } from './constant';
 import {
   ClientToStorage,
+  IChangeData,
   OriginStorageClientOptions,
   StorageError,
   StorageToClient,
@@ -13,6 +14,8 @@ export class OriginStorageClient
   protected _connect?: () => void;
   protected _isConnect: boolean;
   protected _storageOptions?: LocalForageOptions;
+  protected _change?: (data: IChangeData) => void;
+  protected _uri: string;
 
   constructor({ storageOptions, uri, ...options }: OriginStorageClientOptions) {
     const iframe = document.createElement('iframe');
@@ -23,12 +26,36 @@ export class OriginStorageClient
       iframe,
       ...options,
     });
+    this._uri = uri;
     this._isConnect = false;
     this._storageOptions = storageOptions;
   }
 
   onConnect(callback: () => void) {
     this._connect = callback;
+  }
+
+  async onChange(callback: (data: IChangeData) => void) {
+    this._change = callback;
+    const result = await this.emit('broadcastChanges', undefined);
+    if (!result.broadcastChanges) {
+      if (__DEV__) {
+        console.error(
+          `The 'broadcastChanges' in 'OriginStorage' has not been enabled, Please check ${this._uri}.`
+        );
+      }
+    }
+    return result;
+  }
+
+  @listen
+  async change({ request }: Listen<StorageToClient['change']>) {
+    this._change?.({
+      ...request,
+      ...(typeof request.key === 'string'
+        ? { value: await this.getItem(request.key) }
+        : {}),
+    });
   }
 
   @listen

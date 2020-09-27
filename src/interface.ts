@@ -37,10 +37,22 @@ export interface OriginStorageOptions extends IFrameTransportInternalOptions {
    * Enable write access to OriginStorage.
    */
   write?: boolean;
+  /**
+   * @description
+   *
+   * Enable broadcast data changes on OriginStorage.
+   */
+  broadcastChanges?: boolean;
+}
+
+export interface IChangeData {
+  key: string | null;
+  value?: any;
 }
 
 export type StorageToClient = {
   connect: TransportData<void, LocalForageOptions>;
+  change: TransportData<{ key: string | null }, void>;
 };
 
 export interface StorageError {
@@ -48,6 +60,7 @@ export interface StorageError {
 }
 
 export type ClientToStorage = {
+  broadcastChanges: TransportData<void, { broadcastChanges: boolean }>;
   getItem: TransportData<{ key: string }, { value: string } | StorageError>;
   setItem: TransportData<{ key: string; value: string }, StorageError | void>;
   removeItem: TransportData<{ key: string }, StorageError | void>;
