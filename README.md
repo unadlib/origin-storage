@@ -7,6 +7,15 @@ A same-origin storage container for cross-domain access, it is based on localFor
 
 > `origin-storage` uses localStorage in browsers with no IndexedDB or WebSQL support. And Safari is not supported.
 
+## Table of Contents
+
+- [Motivation](#motivation)
+- [Installation](#installation)
+- [API](#api)
+  - [OriginStorage](#originstorage)
+  - [OriginStorageClient](#originstorageclient)
+- [API](#usage-and-example)
+
 ## Motivation
 
 When different Website domains need a same-origin storage container, we have to use iframe's same-origin policy Web local storage solution. `localForage` is an excellent storage library, it supports IndexedDB, WebSQL and localStorage, but it can't solve this problem directly.
@@ -19,6 +28,16 @@ That's why we have this library for same-origin storage based on `localForage`.
 yarn add origin-storage
 ```
 
+## API
+
+### `OriginStorage`
+
+`new OriginStorage(options)`
+
+### `OriginStorageClient`
+
+`new OriginStorageClient(options)`
+
 ## Usage and Example
 
 - Use `OriginStorage` on `http://localhost:9000/storage.js`:
@@ -29,11 +48,7 @@ import { OriginStorage } from 'origin-storage';
 const originStorage = new OriginStorage();
 ```
 
-- Create and host a Web page(`http://localhost:9000/storage.html`):
-
-```html
-<script src="storage.js"></script>
-```
+- Create and host a Web page(`http://localhost:9000/storage.html`) containing JavaScript file `storage.js`.
 
 - Use `OriginStorageClient` on a cross-domain page:
 
@@ -44,7 +59,3 @@ const originStorageClient = new OriginStorageClient({
   uri: 'http://localhost:9000/storage.html',
 });
 ```
-
-## TODO
-
-- [ ] add `onChange` API
