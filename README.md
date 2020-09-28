@@ -11,10 +11,10 @@ A same-origin storage container for cross-domain access, it is based on localFor
 
 - [Motivation](#motivation)
 - [Installation](#installation)
+- [Usage and Example](#usage-and-example)
 - [API](#api)
   - [OriginStorage](#originstorage)
   - [OriginStorageClient](#originstorageclient)
-- [Usage and Example](#usage-and-example)
 
 ## Motivation
 
@@ -27,6 +27,30 @@ That's why we have this library for same-origin storage based on `localForage`.
 ```sh
 yarn add origin-storage
 ```
+
+
+## Usage and Example
+
+- Use `OriginStorage` on `http://localhost:9000/storage.js`:
+
+```ts
+import { OriginStorage } from 'origin-storage';
+
+const originStorage = new OriginStorage();
+```
+
+- Create and host a Web page(`http://localhost:9000/storage.html`) containing JavaScript file `storage.js`.
+
+- Use `OriginStorageClient` on a cross-domain page:
+
+```ts
+import { OriginStorageClient } from 'origin-storage';
+
+const originStorageClient = new OriginStorageClient({
+  uri: 'http://localhost:9000/storage.html',
+});
+```
+
 
 ## API
 
@@ -90,26 +114,4 @@ interface IOriginStorageClient {
   key(index: number): Promise<string>;
   keys(): Promise<string[]>;
 }
-```
-
-## Usage and Example
-
-- Use `OriginStorage` on `http://localhost:9000/storage.js`:
-
-```ts
-import { OriginStorage } from 'origin-storage';
-
-const originStorage = new OriginStorage();
-```
-
-- Create and host a Web page(`http://localhost:9000/storage.html`) containing JavaScript file `storage.js`.
-
-- Use `OriginStorageClient` on a cross-domain page:
-
-```ts
-import { OriginStorageClient } from 'origin-storage';
-
-const originStorageClient = new OriginStorageClient({
-  uri: 'http://localhost:9000/storage.html',
-});
 ```
