@@ -14,7 +14,7 @@ A same-origin storage container for cross-domain access, it is based on localFor
 - [API](#api)
   - [OriginStorage](#originstorage)
   - [OriginStorageClient](#originstorageclient)
-- [API](#usage-and-example)
+- [Usage and Example](#usage-and-example)
 
 ## Motivation
 
