@@ -32,11 +32,65 @@ yarn add origin-storage
 
 ### `OriginStorage`
 
-`new OriginStorage(options)`
+- `new OriginStorage(options)`
+
+```ts
+interface OriginStorageOptions extends IFrameTransportInternalOptions {
+  /**
+   * @description
+   *
+   * Enable read access to OriginStorage.
+   */
+  read?: boolean;
+  /**
+   * @description
+   *
+   * Enable write access to OriginStorage.
+   */
+  write?: boolean;
+  /**
+   * @description
+   *
+   * Enable broadcast data changes on OriginStorage.
+   */
+  broadcastChanges?: boolean;
+}
+```
 
 ### `OriginStorageClient`
 
-`new OriginStorageClient(options)`
+- `new OriginStorageClient(options)`
+
+```ts
+interface OriginStorageClientOptions extends IFrameMainTransportOptions {
+  /**
+   * @description
+   *
+   * Specify the uri of an OriginStorage container.
+   */
+  uri: string;
+  /**
+   * @description
+   *
+   * Set storage options for localforage.
+   */
+  storageOptions?: LocalForageOptions;
+}
+```
+
+- `OriginStorageClient` instance methods.
+
+```ts
+interface IOriginStorageClient {
+  getItem(key: string): Promise<any>;
+  setItem(key: string, value: any): Promise<void>;
+  removeItem(key: string): Promise<void>;
+  clear(): Promise<void>;
+  length(): Promise<number>;
+  key(index: number): Promise<string>;
+  keys(): Promise<string[]>;
+}
+```
 
 ## Usage and Example
 

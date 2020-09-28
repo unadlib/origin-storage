@@ -3,6 +3,7 @@ import { NoConnectError } from './constant';
 import {
   ClientToStorage,
   IChangeData,
+  IOriginStorageClient,
   OriginStorageClientOptions,
   StorageError,
   StorageToClient,
@@ -10,7 +11,7 @@ import {
 
 export class OriginStorageClient
   extends IFrameTransport.Main<ClientToStorage>
-  implements Receiver<StorageToClient> {
+  implements Receiver<StorageToClient>, IOriginStorageClient {
   protected _connect?: () => void;
   protected _isConnect: boolean;
   protected _storageOptions?: LocalForageOptions;

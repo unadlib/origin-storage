@@ -69,3 +69,13 @@ export type ClientToStorage = {
   key: TransportData<{ index: number }, { key: string } | StorageError>;
   keys: TransportData<void, { keys: string[] } | StorageError>;
 };
+
+export interface IOriginStorageClient {
+  getItem(key: string): Promise<any>;
+  setItem(key: string, value: any): Promise<void>;
+  removeItem(key: string): Promise<void>;
+  clear(): Promise<void>;
+  length(): Promise<number>;
+  key(index: number): Promise<string>;
+  keys(): Promise<string[]>;
+}
