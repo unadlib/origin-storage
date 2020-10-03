@@ -80,8 +80,10 @@ export class OriginStorageClient
       throw new Error(`'getItem' error: ${(result as StorageError).error}`);
     }
     let parsedValue: unknown;
+    const { value } = result as { value?: string };
+    if (value === null || typeof value === 'undefined') return null;
     try {
-      parsedValue = JSON.parse((result as { value: string }).value);
+      parsedValue = JSON.parse(value as string);
     } catch (e) {
       console.error(`'getItem' JSON.parse Error`);
       throw e;
