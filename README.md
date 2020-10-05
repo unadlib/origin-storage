@@ -3,7 +3,7 @@
 ![Node CI](https://github.com/unadlib/origin-storage/workflows/Node%20CI/badge.svg)
 [![npm version](https://badge.fury.io/js/origin-storage.svg)](http://badge.fury.io/js/origin-storage)
 
-A same-origin storage container for cross-domain access, it is based on localForage and supports IndexedDB, WebSQL and localStorage.
+A same-origin storage for cross-domain access, it is based on localForage and supports IndexedDB, WebSQL and localStorage.
 
 > `origin-storage` uses localStorage in browsers with no IndexedDB or WebSQL support. And Safari is not supported.
 
