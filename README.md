@@ -106,6 +106,8 @@ interface OriginStorageClientOptions extends IFrameMainTransportOptions {
 
 ```ts
 interface IOriginStorageClient {
+  onConnect(callback: () => void): void;
+  onChange(callback: (data: IChangeData) => void): void;
   getItem(key: string): Promise<any>;
   setItem(key: string, value: any): Promise<void>;
   removeItem(key: string): Promise<void>;
