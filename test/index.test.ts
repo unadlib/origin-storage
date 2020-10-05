@@ -32,7 +32,7 @@ class MemoryStorage {
   }
 }
 
-test('base', async () => {
+const getOriginStorageClient = async () => {
   let mockExternalSend: (...args: any) => void;
   let mockInternalSend: (...args: any) => void;
 
@@ -61,7 +61,13 @@ test('base', async () => {
 
   expect(fn.mock.calls.length).toBe(1);
   await new Promise(r => setTimeout(r));
+  // mock
   (originStorage as any)._localforage = new MemoryStorage();
+  return originStorageClient;
+}
+
+test('base', async () => {
+  const originStorageClient = await getOriginStorageClient();
   expect(await originStorageClient.getItem('v')).toBeNull();
 
   const value = { a: 1 };
@@ -69,4 +75,26 @@ test('base', async () => {
   const savedValue = await originStorageClient.getItem('v');
   expect(savedValue).toEqual(value);
   expect(savedValue === value).toBeFalsy();
+
+  await originStorageClient.removeItem('v');
+  expect(await originStorageClient.getItem('v')).toBeNull();
+
+  await originStorageClient.setItem('v', [1]);
+  expect(await originStorageClient.getItem('v')).toEqual([1]);
+
+  await originStorageClient.clear();
+  expect(await originStorageClient.getItem('v')).toBeNull();
+
+  expect(await originStorageClient.keys()).toEqual([]);
+
+  await originStorageClient.setItem('v', 1);
+  await originStorageClient.setItem('x', '1');
+
+  expect((await originStorageClient.keys()).length).toBe(2);
+
+  const keys = await originStorageClient.keys();
+  expect(await originStorageClient.key(1)).toBe(keys[1]);
+
+  await originStorageClient.clear();
+  expect(await originStorageClient.keys()).toEqual([]);
 });
