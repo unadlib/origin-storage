@@ -1,6 +1,6 @@
 {
   "name": "origin-storage",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A same-origin storage(IndexedDB/WebSQL/localStorage) for cross-domain access",
   "main": "lib/index.js",
   "unpkg": "dist/index.umd.js",
