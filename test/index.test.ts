@@ -1,3 +1,6 @@
+jest.mock('broadcast-channel', () => ({
+  BroadcastChannel: class {},
+}));
 import { OriginStorageClient, OriginStorage } from '../src';
 
 class MemoryStorage {
@@ -236,7 +239,7 @@ test('watch data change', async () => {
       });
       r();
     });
-  })
+  });
   await instances0.originStorageClient.setItem('v', value);
   await watch;
 
@@ -248,7 +251,7 @@ test('watch data change', async () => {
       });
       r();
     });
-  })
+  });
   await instances0.originStorageClient.removeItem('v');
   await watch;
 
@@ -262,7 +265,7 @@ test('watch data change', async () => {
       });
       r();
     });
-  })
+  });
   instances0.originStorageClient.clear();
   await watch;
 });
