@@ -2,6 +2,7 @@ import { IFrameTransport, Receiver, listen, Listen } from 'data-transport';
 import { BroadcastChannel } from 'broadcast-channel';
 import localforage from 'localforage';
 import {
+  DefaultBroadcastChannelName,
   NoAccessError,
   NoReadAccessError,
   NoWriteAccessError,
@@ -26,6 +27,7 @@ export class OriginStorage
     read = true,
     write = true,
     broadcastChanges = false,
+    broadcastChannelName = DefaultBroadcastChannelName,
     ...options
   }: OriginStorageOptions = {}) {
     super(options);
@@ -33,7 +35,7 @@ export class OriginStorage
     this._write = write;
     this._broadcastChanges = broadcastChanges;
     if (this._broadcastChanges) {
-      this._broadcastChannel = new BroadcastChannel('broadcastChannel_test');
+      this._broadcastChannel = new BroadcastChannel(broadcastChannelName);
       this._broadcastChannel.onmessage = (message) => {
         this.emit('change', message, { respond: false });
       };

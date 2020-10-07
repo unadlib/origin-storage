@@ -78,6 +78,12 @@ interface OriginStorageOptions extends IFrameTransportInternalOptions {
    * Enable broadcast data changes on OriginStorage.
    */
   broadcastChanges?: boolean;
+  /**
+   * @description
+   * 
+   * Specify broadcastChannel name.
+   */
+  broadcastChannelName?: string;
 }
 ```
 
