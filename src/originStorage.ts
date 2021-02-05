@@ -1,4 +1,4 @@
-import { IFrameTransport, Receiver, listen, Listen } from 'data-transport';
+import { IFrameTransport, listen } from 'data-transport';
 import { BroadcastChannel } from 'broadcast-channel';
 import localforage from 'localforage';
 import {
@@ -16,7 +16,7 @@ import {
 
 export class OriginStorage
   extends IFrameTransport.IFrame<StorageToClient>
-  implements Receiver<ClientToStorage> {
+  implements ClientToStorage {
   protected _localforage!: ReturnType<typeof localforage.createInstance>;
   protected _read: boolean;
   protected _write: boolean;
@@ -37,7 +37,7 @@ export class OriginStorage
     if (this._broadcastChanges) {
       this._broadcastChannel = new BroadcastChannel(broadcastChannelName);
       this._broadcastChannel.onmessage = (message) => {
-        this.emit('change', message, { respond: false });
+        this.send({ name: 'change', respond: false }, message);
       };
     }
     this.connect();
@@ -47,29 +47,29 @@ export class OriginStorage
     if (!this._read && !this._write) {
       throw new Error(NoAccessError);
     }
-    const config = await this.emit('connect', undefined);
+    const config = await this.emit('connect');
     this._localforage = localforage.createInstance(config);
   }
 
   @listen
-  broadcastChanges({ respond }: Listen<ClientToStorage['broadcastChanges']>) {
-    respond({ broadcastChanges: this._broadcastChanges });
+  async broadcastChanges() {
+    return { broadcastChanges: this._broadcastChanges };
   }
 
   @listen
-  async getItem({ request, respond }: Listen<ClientToStorage['getItem']>) {
+  async getItem(options: { key: string }) {
     if (!this._read) {
       if (__DEV__) {
         console.error(NoReadAccessError);
       }
-      return;
+      return { error: NoReadAccessError };
     }
     try {
-      const value = (await this._localforage.getItem(request.key)) as string;
-      respond({ value });
+      const value = (await this._localforage.getItem(options.key)) as string;
+      return { value };
     } catch (e: any) {
       if (typeof e?.toString === 'function') {
-        respond({ error: e.toString() });
+        return { error: e.toString() };
       }
       if (__DEV__) {
         throw e;
@@ -78,22 +78,21 @@ export class OriginStorage
   }
 
   @listen
-  async setItem({ request, respond }: Listen<ClientToStorage['setItem']>) {
+  async setItem(options: { key: string; value: string }) {
     if (!this._write) {
       if (__DEV__) {
         console.error(NoWriteAccessError);
       }
-      return;
+      return { error: NoWriteAccessError };
     }
     try {
-      await this._localforage.setItem(request.key, request.value);
-      respond();
+      await this._localforage.setItem(options.key, options.value);
       this._broadcastChannel?.postMessage({
-        key: request.key,
+        key: options.key,
       } as IChangeData);
     } catch (e: any) {
       if (typeof e?.toString === 'function') {
-        respond({ error: e.toString() });
+        return { error: e.toString() };
       }
       if (__DEV__) {
         throw e;
@@ -102,25 +101,21 @@ export class OriginStorage
   }
 
   @listen
-  async removeItem({
-    request,
-    respond,
-  }: Listen<ClientToStorage['removeItem']>) {
+  async removeItem(options: { key: string }) {
     if (!this._write) {
       if (__DEV__) {
         console.error(NoWriteAccessError);
       }
-      return;
+      return { error: NoWriteAccessError };
     }
     try {
-      await this._localforage.removeItem(request.key);
-      respond();
+      await this._localforage.removeItem(options.key);
       this._broadcastChannel?.postMessage({
-        key: request.key,
+        key: options.key,
       } as IChangeData);
     } catch (e: any) {
       if (typeof e?.toString === 'function') {
-        respond({ error: e.toString() });
+        return { error: e.toString() };
       }
       if (__DEV__) {
         throw e;
@@ -129,22 +124,21 @@ export class OriginStorage
   }
 
   @listen
-  async clear({ respond }: Listen<ClientToStorage['clear']>) {
+  async clear() {
     if (!this._write) {
       if (__DEV__) {
         console.error(NoWriteAccessError);
       }
-      return;
+      return { error: NoWriteAccessError };
     }
     try {
       await this._localforage.clear();
-      respond();
       this._broadcastChannel?.postMessage({
         key: null,
       } as IChangeData);
     } catch (e: any) {
       if (typeof e?.toString === 'function') {
-        respond({ error: e.toString() });
+        return { error: e.toString() };
       }
       if (__DEV__) {
         throw e;
@@ -153,19 +147,19 @@ export class OriginStorage
   }
 
   @listen
-  async length({ respond }: Listen<ClientToStorage['length']>) {
+  async length() {
     if (!this._read) {
       if (__DEV__) {
         console.error(NoReadAccessError);
       }
-      return;
+      return { error: NoReadAccessError };
     }
     try {
       const length = await this._localforage.length();
-      respond({ length });
+      return { length };
     } catch (e: any) {
       if (typeof e?.toString === 'function') {
-        respond({ error: e.toString() });
+        return { error: e.toString() };
       }
       if (__DEV__) {
         throw e;
@@ -174,19 +168,19 @@ export class OriginStorage
   }
 
   @listen
-  async key({ request, respond }: Listen<ClientToStorage['key']>) {
+  async key(options: { index: number }) {
     if (!this._read) {
       if (__DEV__) {
         console.error(NoReadAccessError);
       }
-      return;
+      return { error: NoReadAccessError };
     }
     try {
-      const key = await this._localforage.key(request.index);
-      respond({ key });
+      const key = await this._localforage.key(options.index);
+      return { key };
     } catch (e: any) {
       if (typeof e?.toString === 'function') {
-        respond({ error: e.toString() });
+        return { error: e.toString() };
       }
       if (__DEV__) {
         throw e;
@@ -195,19 +189,19 @@ export class OriginStorage
   }
 
   @listen
-  async keys({ respond }: Listen<ClientToStorage['keys']>) {
+  async keys() {
     if (!this._read) {
       if (__DEV__) {
         console.error(NoReadAccessError);
       }
-      return;
+      return { error: NoReadAccessError };
     }
     try {
       const keys = await this._localforage.keys();
-      respond({ keys });
+      return { keys };
     } catch (e: any) {
       if (typeof e?.toString === 'function') {
-        respond({ error: e.toString() });
+        return { error: e.toString() };
       }
       if (__DEV__) {
         throw e;

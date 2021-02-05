@@ -1,7 +1,6 @@
 import {
   IFrameMainTransportOptions,
   IFrameTransportInternalOptions,
-  TransportData,
 } from 'data-transport';
 import localforage from 'localforage';
 
@@ -45,7 +44,7 @@ export interface OriginStorageOptions extends IFrameTransportInternalOptions {
   broadcastChanges?: boolean;
   /**
    * @description
-   * 
+   *
    * Specify broadcastChannel name.
    */
   broadcastChannelName?: string;
@@ -56,25 +55,32 @@ export interface IChangeData {
   value?: any;
 }
 
-export type StorageToClient = {
-  connect: TransportData<void, LocalForageOptions>;
-  change: TransportData<{ key: string | null }, void>;
-};
+export interface StorageToClient {
+  connect(): Promise<LocalForageOptions>;
+  change(options: { key: string | null }): Promise<void>;
+}
 
 export interface StorageError {
   error: string;
 }
 
-export type ClientToStorage = {
-  broadcastChanges: TransportData<void, { broadcastChanges: boolean }>;
-  getItem: TransportData<{ key: string }, { value: string } | StorageError>;
-  setItem: TransportData<{ key: string; value: string }, StorageError | void>;
-  removeItem: TransportData<{ key: string }, StorageError | void>;
-  clear: TransportData<void, StorageError | void>;
-  length: TransportData<void, { length: number } | StorageError>;
-  key: TransportData<{ index: number }, { key: string } | StorageError>;
-  keys: TransportData<void, { keys: string[] } | StorageError>;
-};
+export interface ClientToStorage {
+  broadcastChanges(): Promise<{ broadcastChanges: boolean }>;
+  getItem(options: {
+    key: string;
+  }): Promise<{ value: string } | StorageError | void>;
+  setItem(options: {
+    key: string;
+    value: string;
+  }): Promise<StorageError | void>;
+  removeItem(options: { key: string }): Promise<StorageError | void>;
+  clear(): Promise<StorageError | void>;
+  length(): Promise<{ length: number } | StorageError | void>;
+  key(options: {
+    index: number;
+  }): Promise<{ key: string } | StorageError | void>;
+  keys(): Promise<{ keys: string[] } | StorageError | void>;
+}
 
 export interface IOriginStorageClient {
   getItem(key: string): Promise<any>;

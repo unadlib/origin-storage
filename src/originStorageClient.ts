@@ -1,4 +1,4 @@
-import { IFrameTransport, Listen, listen, Receiver } from 'data-transport';
+import { IFrameTransport, listen } from 'data-transport';
 import { NoConnectError } from './constant';
 import {
   ClientToStorage,
@@ -11,7 +11,7 @@ import {
 
 export class OriginStorageClient
   extends IFrameTransport.Main<ClientToStorage>
-  implements Receiver<StorageToClient>, IOriginStorageClient {
+  implements StorageToClient, IOriginStorageClient {
   protected _connect?: () => void;
   protected _isConnect: boolean;
   protected _storageOptions?: LocalForageOptions;
@@ -38,7 +38,7 @@ export class OriginStorageClient
 
   async onChange(callback: (data: IChangeData) => void) {
     this._change = callback;
-    const result = await this.emit('broadcastChanges', undefined);
+    const result = await this.emit('broadcastChanges');
     if (!result.broadcastChanges) {
       if (__DEV__) {
         console.error(
@@ -50,18 +50,17 @@ export class OriginStorageClient
   }
 
   @listen
-  async change({ request }: Listen<StorageToClient['change']>) {
+  async change(options: { key: string | null }) {
     this._change?.({
-      ...request,
-      ...(typeof request.key === 'string'
-        ? { value: await this.getItem(request.key) }
+      ...options,
+      ...(typeof options.key === 'string'
+        ? { value: await this.getItem(options.key) }
         : {}),
     });
   }
 
   @listen
-  connect({ respond }: Listen<StorageToClient['connect']>) {
-    respond(this._storageOptions!);
+  async connect() {
     if (typeof this._connect !== 'function') {
       if (__DEV__) {
         throw new Error(`'onConnect' has not been called.`);
@@ -69,6 +68,7 @@ export class OriginStorageClient
     }
     this._connect?.();
     this._isConnect = true;
+    return this._storageOptions!;
   }
 
   async getItem(key: string) {
@@ -124,7 +124,7 @@ export class OriginStorageClient
     if (!this._isConnect) {
       throw new Error(NoConnectError);
     }
-    const result = await this.emit('clear', undefined);
+    const result = await this.emit('clear');
     if ((result as StorageError)?.error) {
       throw new Error(`'clear' error: ${(result as StorageError).error}`);
     }
@@ -135,11 +135,11 @@ export class OriginStorageClient
     if (!this._isConnect) {
       throw new Error(NoConnectError);
     }
-    const result = await this.emit('length', undefined);
+    const result = await this.emit('length');
     if ((result as StorageError)?.error) {
       throw new Error(`'length' error: ${(result as StorageError).error}`);
     }
-    return (result as Exclude<typeof result, StorageError>).length;
+    return (result as Exclude<typeof result, StorageError | void>)?.length;
   }
 
   async key(index: number) {
@@ -150,17 +150,17 @@ export class OriginStorageClient
     if ((result as StorageError)?.error) {
       throw new Error(`'key' error: ${(result as StorageError).error}`);
     }
-    return (result as Exclude<typeof result, StorageError>).key;
+    return (result as Exclude<typeof result, StorageError | void>)?.key;
   }
 
   async keys() {
     if (!this._isConnect) {
       throw new Error(NoConnectError);
     }
-    const result = await this.emit('keys', undefined);
+    const result = await this.emit('keys');
     if ((result as StorageError)?.error) {
       throw new Error(`'keys' error: ${(result as StorageError).error}`);
     }
-    return (result as Exclude<typeof result, StorageError>).keys;
+    return (result as Exclude<typeof result, StorageError | void>)?.keys;
   }
 }

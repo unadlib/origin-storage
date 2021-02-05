@@ -119,46 +119,16 @@ test('only write', async () => {
   });
   const value = { a: 1 };
   await originStorageClient.setItem('v', value);
-  const timeoutError = new Error('timeout');
-  let result = await Promise.race([
-    originStorageClient.getItem('v'),
-    new Promise((r) =>
-      setTimeout(() => {
-        r(timeoutError);
-      }, 100)
-    ),
-  ]);
-  expect(result === timeoutError).toBeTruthy();
-
-  result = await Promise.race([
-    originStorageClient.keys(),
-    new Promise((r) =>
-      setTimeout(() => {
-        r(timeoutError);
-      }, 100)
-    ),
-  ]);
-  expect(result === timeoutError).toBeTruthy();
-
-  result = await Promise.race([
-    originStorageClient.length(),
-    new Promise((r) =>
-      setTimeout(() => {
-        r(timeoutError);
-      }, 100)
-    ),
-  ]);
-  expect(result === timeoutError).toBeTruthy();
-
-  result = await Promise.race([
-    originStorageClient.key(0),
-    new Promise((r) =>
-      setTimeout(() => {
-        r(timeoutError);
-      }, 100)
-    ),
-  ]);
-  expect(result === timeoutError).toBeTruthy();
+  for (const fn of [
+    () => originStorageClient.getItem('v'),
+    () => originStorageClient.keys(),
+    () => originStorageClient.length(),
+    () => originStorageClient.key(0),
+  ]) {
+    await expect(fn).rejects.toThrow(
+      /The OriginStorage does not have any read access./
+    );
+  }
 });
 
 test('only read', async () => {
@@ -167,37 +137,16 @@ test('only read', async () => {
     write: false,
   });
   const value = { a: 1 };
-  const timeoutError = new Error('timeout');
-  let result = await Promise.race([
-    originStorageClient.setItem('v', value),
-    new Promise((r) =>
-      setTimeout(() => {
-        r(timeoutError);
-      }, 100)
-    ),
-  ]);
-  expect(result === timeoutError).toBeTruthy();
 
-  result = await Promise.race([
-    originStorageClient.removeItem('v'),
-    new Promise((r) =>
-      setTimeout(() => {
-        r(timeoutError);
-      }, 100)
-    ),
-  ]);
-  expect(result === timeoutError).toBeTruthy();
-
-  result = await Promise.race([
-    originStorageClient.clear(),
-    new Promise((r) =>
-      setTimeout(() => {
-        r(timeoutError);
-      }, 100)
-    ),
-  ]);
-  expect(result === timeoutError).toBeTruthy();
-
+  for (const fn of [
+    () => originStorageClient.setItem('v', value),
+    () => originStorageClient.removeItem('v'),
+    () => originStorageClient.clear(),
+  ]) {
+    await expect(fn).rejects.toThrow(
+      /The OriginStorage does not have any write access./
+    );
+  }
   expect(await originStorageClient.getItem('v')).toBeNull();
 });
 
@@ -237,7 +186,7 @@ test('watch data change', async () => {
         key: 'v',
         value,
       });
-      r();
+      r(null);
     });
   });
   await instances0.originStorageClient.setItem('v', value);
@@ -249,7 +198,7 @@ test('watch data change', async () => {
         key: 'v',
         value: null,
       });
-      r();
+      r(null);
     });
   });
   await instances0.originStorageClient.removeItem('v');
@@ -263,7 +212,7 @@ test('watch data change', async () => {
       expect(data).toEqual({
         key: null,
       });
-      r();
+      r(null);
     });
   });
   instances0.originStorageClient.clear();
