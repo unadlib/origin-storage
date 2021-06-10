@@ -37,7 +37,7 @@ export class OriginStorage
     if (this._broadcastChanges) {
       this._broadcastChannel = new BroadcastChannel(broadcastChannelName);
       this._broadcastChannel.onmessage = (message) => {
-        this.send({ name: 'change', respond: false }, message);
+        this.emit({ name: 'change', respond: false }, message);
       };
     }
     this.connect();
