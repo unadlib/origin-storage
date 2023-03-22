@@ -55,16 +55,16 @@ export interface IChangeData {
   value?: any;
 }
 
-export interface StorageToClient {
+export type StorageToClient = {
   connect(): Promise<LocalForageOptions>;
   change(options: { key: string | null }): Promise<void>;
-}
+};
 
 export interface StorageError {
   error: string;
 }
 
-export interface ClientToStorage {
+export type ClientToStorage = {
   broadcastChanges(): Promise<{ broadcastChanges: boolean }>;
   getItem(options: {
     key: string;
@@ -80,7 +80,7 @@ export interface ClientToStorage {
     index: number;
   }): Promise<{ key: string } | StorageError | void>;
   keys(): Promise<{ keys: string[] } | StorageError | void>;
-}
+};
 
 export interface IOriginStorageClient {
   getItem(key: string): Promise<any>;
