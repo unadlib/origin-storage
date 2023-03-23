@@ -9,8 +9,8 @@
     "test": "jest",
     "clean": "rimraf dist",
     "build": "yarn clean && tsc --skipLibCheck && yarn build:prod && yarn build:dev",
-    "build:prod": "NODE_ENV=production rollup --config",
-    "build:dev": "NODE_ENV=development rollup --config",
+    "build:prod": "NODE_ENV=production rollup --config --bundleConfigAsCjs",
+    "build:dev": "NODE_ENV=development rollup --config --bundleConfigAsCjs",
     "commit": "yarn git-cz"
   },
   "repository": {
