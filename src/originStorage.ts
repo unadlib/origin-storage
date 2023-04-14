@@ -15,7 +15,7 @@ import {
 } from './interface';
 
 export class OriginStorage
-  extends IFrameTransport.IFrame<{ listen: StorageToClient }>
+  extends IFrameTransport.IFrame<{ emit: StorageToClient }>
   implements ClientToStorage
 {
   protected _localforage!: ReturnType<typeof localforage.createInstance>;

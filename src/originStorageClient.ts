@@ -10,7 +10,7 @@ import {
 } from './interface';
 
 export class OriginStorageClient
-  extends IFrameTransport.Main<{ listen: ClientToStorage }>
+  extends IFrameTransport.Main<{ emit: ClientToStorage }>
   implements StorageToClient, IOriginStorageClient
 {
   protected _connect?: () => void;
