@@ -7,7 +7,7 @@ class MemoryStorage {
   private _data: Record<string, any> = {};
 
   getItem(key: string) {
-    return this._data[key];
+    return this._data[key] || null;
   }
 
   setItem(key: string, value: any) {

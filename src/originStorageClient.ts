@@ -80,30 +80,15 @@ export class OriginStorageClient
     if ((result as StorageError)?.error) {
       throw new Error(`'getItem' error: ${(result as StorageError).error}`);
     }
-    let parsedValue: unknown;
-    const { value } = result as { value?: string };
-    if (value === null || typeof value === 'undefined') return null;
-    try {
-      parsedValue = JSON.parse(value as string);
-    } catch (e) {
-      console.error(`'getItem' JSON.parse Error`);
-      throw e;
-    }
-    return parsedValue;
+    const { value } = result as { value: any }
+    return value;
   }
 
   async setItem<T>(key: string, value: unknown) {
     if (!this._isConnect) {
       throw new Error(NoConnectError);
     }
-    let stringifiedValue: string;
-    try {
-      stringifiedValue = JSON.stringify(value);
-    } catch (e) {
-      console.error(`'setItem' JSON.stringify Error`);
-      throw e;
-    }
-    const result = await this.emit('setItem', { key, value: stringifiedValue });
+    const result = await this.emit('setItem', { key, value });
     if ((result as StorageError)?.error) {
       throw new Error(`'setItem' error: ${(result as StorageError).error}`);
     }
