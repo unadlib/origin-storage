@@ -66,7 +66,7 @@ export class OriginStorage
       return { error: NoReadAccessError };
     }
     try {
-      const value = (await this._localforage.getItem(options.key)) as any;
+      const value = (await this._localforage.getItem(options.key)) as unknown;
       return { value };
     } catch (e: any) {
       if (typeof e?.toString === 'function') {
@@ -79,7 +79,7 @@ export class OriginStorage
   }
 
   @listen
-  async setItem(options: { key: string; value: any }) {
+  async setItem(options: { key: string; value: unknown }) {
     if (!this._write) {
       if (__DEV__) {
         console.error(NoWriteAccessError);

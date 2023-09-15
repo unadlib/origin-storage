@@ -80,7 +80,7 @@ export class OriginStorageClient
     if ((result as StorageError)?.error) {
       throw new Error(`'getItem' error: ${(result as StorageError).error}`);
     }
-    const { value } = result as { value: any }
+    const { value } = result as { value: unknown }
     return value;
   }
 

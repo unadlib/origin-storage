@@ -68,10 +68,10 @@ export type ClientToStorage = {
   broadcastChanges(): Promise<{ broadcastChanges: boolean }>;
   getItem(options: {
     key: string;
-  }): Promise<{ value: any } | StorageError | void>;
+  }): Promise<{ value: unknown } | StorageError | void>;
   setItem(options: {
     key: string;
-    value: any;
+    value: unknown;
   }): Promise<StorageError | void>;
   removeItem(options: { key: string }): Promise<StorageError | void>;
   clear(): Promise<StorageError | void>;
