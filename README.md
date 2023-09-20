@@ -39,6 +39,14 @@ import { OriginStorage } from 'origin-storage';
 const originStorage = new OriginStorage();
 ```
 
+> If you need to set up a more secure origin control, you can set `targetOrigin` like this.
+
+```ts
+const originStorage = new OriginStorage({
+  targetOrigin: 'http://example.com',
+})
+```
+
 - Create and host a Web page(`http://localhost:9000/storage.html`) containing JavaScript file `storage.js`.
 
 - Use `OriginStorageClient` on a cross-domain page:

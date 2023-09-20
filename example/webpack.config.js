@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
   entry: {
     index: './src/index.ts',
-    storage: './src/storage.ts'
+    storage: './src/storage.ts',
   },
   module: {
     rules: [
@@ -25,6 +25,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
   devServer: {
-    port: 9000
-  }
+    port: 9000,
+    host: '0.0.0.0',
+  },
 };
