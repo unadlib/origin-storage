@@ -1,5 +1,4 @@
 import { IFrameTransport, listen } from 'data-transport';
-import { NoConnectError } from './constant';
 import {
   ClientToStorage,
   IChangeData,
@@ -31,7 +30,14 @@ export class OriginStorageClient
     this._uri = uri;
     this._isConnect = false;
     this._storageOptions = storageOptions;
+    this._connectPromise = new Promise<void>((resolve) => {
+      this._connectResolve = resolve;
+    });
   }
+
+  private _connectPromise: Promise<void>;
+
+  private _connectResolve?: () => void;
 
   onConnect(callback: () => void) {
     this._connect = callback;
@@ -69,24 +75,25 @@ export class OriginStorageClient
     }
     this._connect?.();
     this._isConnect = true;
+    this._connectResolve?.();
     return this._storageOptions!;
   }
 
   async getItem(key: string) {
     if (!this._isConnect) {
-      throw new Error(NoConnectError);
+      await this._connectPromise;
     }
     const result = await this.emit('getItem', { key });
     if ((result as StorageError)?.error) {
       throw new Error(`'getItem' error: ${(result as StorageError).error}`);
     }
-    const { value } = result as { value: unknown }
+    const { value } = result as { value: unknown };
     return value;
   }
 
   async setItem<T>(key: string, value: unknown) {
     if (!this._isConnect) {
-      throw new Error(NoConnectError);
+      await this._connectPromise;
     }
     const result = await this.emit('setItem', { key, value });
     if ((result as StorageError)?.error) {
@@ -97,7 +104,7 @@ export class OriginStorageClient
 
   async removeItem(key: string) {
     if (!this._isConnect) {
-      throw new Error(NoConnectError);
+      await this._connectPromise;
     }
     const result = await this.emit('removeItem', { key });
     if ((result as StorageError)?.error) {
@@ -108,7 +115,7 @@ export class OriginStorageClient
 
   async clear() {
     if (!this._isConnect) {
-      throw new Error(NoConnectError);
+      await this._connectPromise;
     }
     const result = await this.emit('clear');
     if ((result as StorageError)?.error) {
@@ -119,7 +126,7 @@ export class OriginStorageClient
 
   async length() {
     if (!this._isConnect) {
-      throw new Error(NoConnectError);
+      await this._connectPromise;
     }
     const result = await this.emit('length');
     if ((result as StorageError)?.error) {
@@ -130,7 +137,7 @@ export class OriginStorageClient
 
   async key(index: number) {
     if (!this._isConnect) {
-      throw new Error(NoConnectError);
+      await this._connectPromise;
     }
     const result = await this.emit('key', { index });
     if ((result as StorageError)?.error) {
@@ -141,7 +148,7 @@ export class OriginStorageClient
 
   async keys() {
     if (!this._isConnect) {
-      throw new Error(NoConnectError);
+      await this._connectPromise;
     }
     const result = await this.emit('keys');
     if ((result as StorageError)?.error) {
