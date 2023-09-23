@@ -12,7 +12,7 @@ export class OriginStorageClient
   extends IFrameTransport.Main<{ emit: ClientToStorage }>
   implements StorageToClient, IOriginStorageClient
 {
-  protected _connect?: () => void;
+  protected _onConnectCallbacks: Set<() => void> = new Set();
   protected _isConnect: boolean;
   protected _storageOptions?: LocalForageOptions;
   protected _change?: (data: IChangeData) => void;
@@ -39,8 +39,18 @@ export class OriginStorageClient
 
   private _connectResolve?: () => void;
 
+  private _connect() {
+    this._onConnectCallbacks.forEach((callback) => callback());
+  }
+
   onConnect(callback: () => void) {
-    this._connect = callback;
+    this._onConnectCallbacks.add(callback);
+    if (this._isConnect) {
+      callback();
+    }
+    return () => {
+      this._onConnectCallbacks.delete(callback);
+    };
   }
 
   async onChange(callback: (data: IChangeData) => void) {
@@ -67,16 +77,20 @@ export class OriginStorageClient
   }
 
   @listen
+  async getConfig() {
+    return this._storageOptions!;
+  }
+
+  @listen
   async connect() {
     if (typeof this._connect !== 'function') {
       if (__DEV__) {
         throw new Error(`'onConnect' has not been called.`);
       }
     }
-    this._connect?.();
     this._isConnect = true;
     this._connectResolve?.();
-    return this._storageOptions!;
+    this._connect?.();
   }
 
   async getItem(key: string) {

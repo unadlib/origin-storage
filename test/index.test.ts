@@ -54,8 +54,12 @@ const getInstances = async ({
   });
 
   const fn = jest.fn();
+  const fn1 = jest.fn();
 
   originStorageClient.onConnect(fn);
+  const unsubscribe = originStorageClient.onConnect(fn1);
+
+  unsubscribe();
 
   const originStorage = new OriginStorage({
     read,
@@ -68,9 +72,9 @@ const getInstances = async ({
       mockInternalSend(JSON.parse(JSON.stringify(message)));
     },
   });
-
-  expect(fn.mock.calls.length).toBe(1);
   await new Promise((r) => setTimeout(r));
+  expect(fn.mock.calls.length).toBe(1);
+  expect(fn1.mock.calls.length).toBe(0);
   // mock
   (originStorage as any)._localforage = new MemoryStorage();
   return {
@@ -177,7 +181,9 @@ test('watch data change', async () => {
       });
     },
   };
-  (instances1.originStorage as any)._localforage = (instances0.originStorage as any)._localforage;
+  (instances1.originStorage as any)._localforage = (
+    instances0.originStorage as any
+  )._localforage;
 
   const value = { a: 1 };
   let watch = new Promise((r) => {

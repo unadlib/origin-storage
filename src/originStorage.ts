@@ -48,8 +48,9 @@ export class OriginStorage
     if (!this._read && !this._write) {
       throw new Error(NoAccessError);
     }
-    const config = await this.emit('connect');
+    const config = await this.emit('getConfig');
     this._localforage = localforage.createInstance(config);
+    await this.emit('connect');
   }
 
   @listen
