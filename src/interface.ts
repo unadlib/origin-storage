@@ -56,7 +56,8 @@ export interface IChangeData {
 }
 
 export type StorageToClient = {
-  connect(): Promise<LocalForageOptions>;
+  connect(): Promise<void>;
+  getConfig(): Promise<LocalForageOptions>;
   change(options: { key: string | null }): Promise<void>;
 };
 

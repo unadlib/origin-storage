@@ -36,6 +36,7 @@ export default isProduction
         commonjs(),
         replace({
           __DEV__: 'false',
+          preventAssignment: true,
         }),
         terser(),
       ],
@@ -56,6 +57,7 @@ export default isProduction
         commonjs(),
         replace({
           __DEV__: 'true',
+          preventAssignment: true,
         }),
       ],
       external: ['data-transport', 'broadcast-channel'],
