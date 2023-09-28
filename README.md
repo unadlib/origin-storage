@@ -67,26 +67,18 @@ const originStorageClient = new OriginStorageClient({
 ```ts
 interface OriginStorageOptions extends IFrameTransportInternalOptions {
   /**
-   * @description
-   *
    * Enable read access to OriginStorage.
    */
   read?: boolean;
   /**
-   * @description
-   *
    * Enable write access to OriginStorage.
    */
   write?: boolean;
   /**
-   * @description
-   *
    * Enable broadcast data changes on OriginStorage.
    */
   broadcastChanges?: boolean;
   /**
-   * @description
-   *
    * Specify broadcastChannel name.
    */
   broadcastChannelName?: string;
@@ -100,14 +92,10 @@ interface OriginStorageOptions extends IFrameTransportInternalOptions {
 ```ts
 interface OriginStorageClientOptions extends IFrameMainTransportOptions {
   /**
-   * @description
-   *
    * Specify the uri of an OriginStorage container.
    */
   uri: string;
   /**
-   * @description
-   *
    * Set storage options for localforage.
    */
   storageOptions?: LocalForageOptions;
