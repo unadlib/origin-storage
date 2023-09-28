@@ -62,6 +62,7 @@ export class OriginStorageClient
    * The callback will be called when the storage is changed.
    */
   async onChange(callback: OnChangeCallback) {
+    this._onChangeCallbacks.add(callback);
     if (!this._isConnect) {
       await this._connectPromise;
     }
@@ -73,7 +74,6 @@ export class OriginStorageClient
         );
       }
     }
-    this._onChangeCallbacks.add(callback);
     return {
       ...result,
       off: () => {

@@ -186,8 +186,16 @@ test('watch data change', async () => {
   )._localforage;
 
   const value = { a: 1 };
+  let resultPromise: Promise<{
+    off: () => void;
+    broadcastChanges: boolean;
+  }>;
+  let result: {
+    off: () => void;
+    broadcastChanges: boolean;
+  };
   let watch = new Promise((r) => {
-    instances1.originStorageClient.onChange((data) => {
+    resultPromise = instances1.originStorageClient.onChange((data) => {
       expect(data).toEqual({
         key: 'v',
         value,
@@ -197,9 +205,12 @@ test('watch data change', async () => {
   });
   await instances0.originStorageClient.setItem('v', value);
   await watch;
+  result = await resultPromise!;
+  expect(result.broadcastChanges).toBeTruthy();
+  result.off();
 
   watch = new Promise((r) => {
-    instances1.originStorageClient.onChange((data) => {
+    resultPromise = instances1.originStorageClient.onChange((data) => {
       expect(data).toEqual({
         key: 'v',
         value: null,
@@ -209,10 +220,13 @@ test('watch data change', async () => {
   });
   await instances0.originStorageClient.removeItem('v');
   await watch;
+  result = await resultPromise!;
+  expect(result.broadcastChanges).toBeTruthy();
+  result.off();
 
-  await instances1.originStorageClient.onChange(() => {});
   await instances0.originStorageClient.setItem('x', 1);
   await instances0.originStorageClient.setItem('y', 1);
+  await new Promise((r) => setTimeout(r));
   watch = new Promise((r) => {
     instances1.originStorageClient.onChange((data) => {
       expect(data).toEqual({
