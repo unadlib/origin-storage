@@ -8,14 +8,16 @@ import {
   StorageToClient,
 } from './interface';
 
+type OnChangeCallback = (data: IChangeData) => void;
+
 export class OriginStorageClient
   extends IFrameTransport.Main<{ emit: ClientToStorage }>
   implements StorageToClient, IOriginStorageClient
 {
   protected _onConnectCallbacks: Set<() => void> = new Set();
+  protected _onChangeCallbacks: Set<OnChangeCallback> = new Set();
   protected _isConnect: boolean;
   protected _storageOptions?: LocalForageOptions;
-  protected _change?: (data: IChangeData) => void;
   protected _uri: string;
 
   constructor({ storageOptions, uri, ...options }: OriginStorageClientOptions) {
@@ -43,6 +45,9 @@ export class OriginStorageClient
     this._onConnectCallbacks.forEach((callback) => callback());
   }
 
+  /**
+   * The callback will be called when the iframe is connected.
+   */
   onConnect(callback: () => void) {
     this._onConnectCallbacks.add(callback);
     if (this._isConnect) {
@@ -53,8 +58,13 @@ export class OriginStorageClient
     };
   }
 
-  async onChange(callback: (data: IChangeData) => void) {
-    this._change = callback;
+  /**
+   * The callback will be called when the storage is changed.
+   */
+  async onChange(callback: OnChangeCallback) {
+    if (!this._isConnect) {
+      await this._connectPromise;
+    }
     const result = await this.emit('broadcastChanges');
     if (!result.broadcastChanges) {
       if (__DEV__) {
@@ -63,12 +73,28 @@ export class OriginStorageClient
         );
       }
     }
-    return result;
+    this._onChangeCallbacks.add(callback);
+    return {
+      ...result,
+      off: () => {
+        this._onChangeCallbacks.delete(callback);
+      },
+    };
+  }
+
+  private _change(data: IChangeData) {
+    this._onChangeCallbacks.forEach((callback) => {
+      try {
+        callback(data);
+      } catch (e) {
+        console.error(e);
+      }
+    });
   }
 
   @listen
   async change(options: { key: string | null }) {
-    this._change?.({
+    this._change({
       ...options,
       ...(typeof options.key === 'string'
         ? { value: await this.getItem(options.key) }
@@ -93,6 +119,9 @@ export class OriginStorageClient
     this._connect?.();
   }
 
+  /**
+   * Get the value of the specified key.
+   */
   async getItem(key: string) {
     if (!this._isConnect) {
       await this._connectPromise;
@@ -105,6 +134,9 @@ export class OriginStorageClient
     return value;
   }
 
+  /**
+   * Set the value of the specified key.
+   */
   async setItem<T>(key: string, value: unknown) {
     if (!this._isConnect) {
       await this._connectPromise;
@@ -116,6 +148,9 @@ export class OriginStorageClient
     return result as Exclude<typeof result, StorageError>;
   }
 
+  /**
+   * Remove the value of the specified key.
+   */
   async removeItem(key: string) {
     if (!this._isConnect) {
       await this._connectPromise;
@@ -127,6 +162,9 @@ export class OriginStorageClient
     return result as Exclude<typeof result, StorageError>;
   }
 
+  /**
+   * Clear all key/value pairs in the storage.
+   */
   async clear() {
     if (!this._isConnect) {
       await this._connectPromise;
@@ -138,6 +176,9 @@ export class OriginStorageClient
     return result as Exclude<typeof result, StorageError>;
   }
 
+  /**
+   * Get the number of key/value pairs in the storage.
+   */
   async length() {
     if (!this._isConnect) {
       await this._connectPromise;
@@ -149,6 +190,9 @@ export class OriginStorageClient
     return (result as Exclude<typeof result, StorageError | void>)?.length;
   }
 
+  /**
+   * Get the name of the nth key in the storage.
+   */
   async key(index: number) {
     if (!this._isConnect) {
       await this._connectPromise;
@@ -160,6 +204,9 @@ export class OriginStorageClient
     return (result as Exclude<typeof result, StorageError | void>)?.key;
   }
 
+  /**
+   * Get all keys in the storage.
+   */
   async keys() {
     if (!this._isConnect) {
       await this._connectPromise;

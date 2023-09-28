@@ -28,7 +28,6 @@ That's why we have this library for same-origin storage based on `localForage`.
 yarn add origin-storage
 ```
 
-
 ## Usage and Example
 
 - Use `OriginStorage` on `http://localhost:9000/storage.js`:
@@ -44,7 +43,7 @@ const originStorage = new OriginStorage();
 ```ts
 const originStorage = new OriginStorage({
   targetOrigin: 'http://example.com',
-})
+});
 ```
 
 - Create and host a Web page(`http://localhost:9000/storage.html`) containing JavaScript file `storage.js`.
@@ -58,7 +57,6 @@ const originStorageClient = new OriginStorageClient({
   uri: 'http://localhost:9000/storage.html',
 });
 ```
-
 
 ## API
 
@@ -88,7 +86,7 @@ interface OriginStorageOptions extends IFrameTransportInternalOptions {
   broadcastChanges?: boolean;
   /**
    * @description
-   * 
+   *
    * Specify broadcastChannel name.
    */
   broadcastChannelName?: string;
@@ -120,14 +118,44 @@ interface OriginStorageClientOptions extends IFrameMainTransportOptions {
 
 ```ts
 interface IOriginStorageClient {
+  /**
+   * The callback will be called when the iframe is connected.
+   */
   onConnect(callback: () => void): void;
-  onChange(callback: (data: IChangeData) => void): void;
+  /**
+   * The callback will be called when the storage is changed.
+   */
+  onChange(callback: (data: IChangeData) => void): Promise<{
+    off: () => void;
+    broadcastChanges: boolean;
+  }>;
+  /**
+   * Get the value of the specified key.
+   */
   getItem(key: string): Promise<any>;
+  /**
+   * Set the value of the specified key.
+   */
   setItem(key: string, value: any): Promise<void>;
+  /**
+   * Remove the value of the specified key.
+   */
   removeItem(key: string): Promise<void>;
+  /**
+   * Clear all key/value pairs in the storage.
+   */
   clear(): Promise<void>;
+  /**
+   * Get the number of key/value pairs in the storage.
+   */
   length(): Promise<number>;
+  /**
+   * Get the name of the nth key in the storage.
+   */
   key(index: number): Promise<string>;
+  /**
+   * Get all keys in the storage.
+   */
   keys(): Promise<string[]>;
 }
 ```
