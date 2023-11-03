@@ -51,6 +51,7 @@ const getInstances = async ({
     sender: (message) => {
       mockExternalSend(JSON.parse(JSON.stringify(message)));
     },
+    skipConnectionCheck: true,
   });
 
   const fn = jest.fn();
@@ -71,6 +72,7 @@ const getInstances = async ({
     sender: (message) => {
       mockInternalSend(JSON.parse(JSON.stringify(message)));
     },
+    skipConnectionCheck: true,
   });
   await new Promise((r) => setTimeout(r));
   expect(fn.mock.calls.length).toBe(1);
