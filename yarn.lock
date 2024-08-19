@@ -1595,10 +1595,10 @@ cz-conventional-changelog@3.3.0:
   optionalDependencies:
     "@commitlint/load" ">6.1.1"
 
-data-transport@^4.3.3:
-  version "4.3.3"
-  resolved "https://registry.yarnpkg.com/data-transport/-/data-transport-4.3.3.tgz#1e6b8b236d30ef0464f95ab7a2af1c13ff1a72f3"
-  integrity sha512-QQ93QnaESIoqHglmoDTJGe2qCJ9nXocJqC8Dxg+dC6Kv1Gpcy8E5QahcW4DlLkad3DynzaUILdgM/2bku7pfGg==
+data-transport@^4.3.6:
+  version "4.3.6"
+  resolved "https://registry.yarnpkg.com/data-transport/-/data-transport-4.3.6.tgz#6f51f5d91a9d43e5f4ec1b491d009e80c47e243c"
+  integrity sha512-YIhrpsHU4xy4BX4RH9cPkDvpF2YmCmVnyV6yJQ79MrSg74mEdMel16tGyL/BkCSZDned0sqBye8jC5fqQxa5PQ==
   dependencies:
     uuid "^9.0.0"
 
