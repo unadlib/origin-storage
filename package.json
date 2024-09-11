@@ -78,7 +78,7 @@
   },
   "dependencies": {
     "broadcast-channel": "^5.3.0",
-    "data-transport": "^4.3.6",
+    "data-transport": "^4.4.0",
     "localforage": "^1.10.0"
   }
 }
